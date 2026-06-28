@@ -83,4 +83,4 @@ jobs:
           name: pixel-ksu-susfs-kernel-ab${{ steps.build_number.outputs.value }}
           if-no-files-found: error
           path: |
-            ${{ env.KERNEL_SOURCE_DIR }}/out/dist
+            ${{ env.KERNEL_SOURCE_DIR }}/out/dist/
