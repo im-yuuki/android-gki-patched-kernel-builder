@@ -88,4 +88,4 @@ jobs:
           name: android-gki-ksu-susfs-kernel-ab${{ steps.build_number.outputs.value }}
           if-no-files-found: error
           path: |
-            ${{ env.KERNEL_SOURCE_DIR }}/out/
+            ${{ env.KERNEL_SOURCE_DIR }}/out/kernel_aarch64/dist/
