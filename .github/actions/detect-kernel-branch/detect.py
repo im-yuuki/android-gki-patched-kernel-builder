@@ -76,7 +76,7 @@ def main():
 
     print(f"Detected kernel version: {kernel_version}")
     print(f"Derived manifest branch: {manifest_branch}")
-    print(f"Derived susfs branch:     {susfs_branch}")
+    print(f"Derived susfs branch:    {susfs_branch}")
 
     # Write outputs for GitHub Actions
     github_output = os.environ.get("GITHUB_OUTPUT")
