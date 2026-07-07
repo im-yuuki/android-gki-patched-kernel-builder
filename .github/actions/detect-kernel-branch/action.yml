@@ -21,6 +21,7 @@ runs:
   using: composite
   steps:
     - name: Detect branches from manifest XML
+      id: detect
       shell: bash
       env:
         BUILD_NUMBER: ${{ inputs.build-number }}
