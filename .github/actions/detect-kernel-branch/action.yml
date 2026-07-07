@@ -1,0 +1,29 @@
+name: Detect Kernel Branch
+description: Parse the Android CI manifest XML to detect the kernel branch and derive manifest/susfs branch names.
+
+inputs:
+  build-number:
+    description: Numeric Google kernel build number.
+    required: true
+
+outputs:
+  manifest-branch:
+    description: Detected manifest branch, e.g. common-android14-6.1
+    value: ${{ steps.detect.outputs.manifest-branch }}
+  susfs-branch:
+    description: Derived susfs branch, e.g. gki-android14-6.1-dev
+    value: ${{ steps.detect.outputs.susfs-branch }}
+  kernel-version:
+    description: Detected kernel version, e.g. android14-6.1
+    value: ${{ steps.detect.outputs.kernel-version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Detect branches from manifest XML
+      shell: bash
+      env:
+        BUILD_NUMBER: ${{ inputs.build-number }}
+      run: |
+        set -euxo pipefail
+        python3 "${{ github.action_path }}/detect.py" "$BUILD_NUMBER"

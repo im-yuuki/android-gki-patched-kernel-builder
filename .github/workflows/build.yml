@@ -21,8 +21,6 @@ jobs:
 
     env:
       KERNEL_SOURCE_DIR: kernel_source
-      MANIFEST_BRANCH: common-android14-6.1
-      SUSFS_BRANCH: gki-android14-6.1-dev
       KSU_BRANCH: dev-susfs
 
     steps:
@@ -43,6 +41,12 @@ jobs:
         with:
           build-number: ${{ inputs.build_number }}
 
+      - name: Detect kernel branch
+        id: detect
+        uses: ./.github/actions/detect-kernel-branch
+        with:
+          build-number: ${{ steps.build_number.outputs.value }}
+
       - name: Cache apt packages
         uses: ./.github/actions/cache-apt
 
@@ -53,7 +57,7 @@ jobs:
         uses: ./.github/actions/cache-build-dependencies
         with:
           build-number: ${{ steps.build_number.outputs.value }}
-          manifest-branch: ${{ env.MANIFEST_BRANCH }}
+          manifest-branch: ${{ steps.detect.outputs.manifest-branch }}
 
       - name: Configure Git
         uses: ./.github/actions/configure-git
@@ -63,13 +67,14 @@ jobs:
         with:
           build-number: ${{ steps.build_number.outputs.value }}
           kernel-source-dir: ${{ env.KERNEL_SOURCE_DIR }}
-          manifest-branch: ${{ env.MANIFEST_BRANCH }}
+          manifest-branch: ${{ steps.detect.outputs.manifest-branch }}
 
       - name: Patch kernel source
         uses: ./.github/actions/patch-kernel-source
         with:
           kernel-source-dir: ${{ env.KERNEL_SOURCE_DIR }}
-          susfs-branch: ${{ env.SUSFS_BRANCH }}
+          kernel-version: ${{ steps.detect.outputs.kernel-version }}
+          susfs-branch: ${{ steps.detect.outputs.susfs-branch }}
           ksu-branch: ${{ env.KSU_BRANCH }}
 
       - name: Build patched kernel
@@ -80,7 +85,7 @@ jobs:
       - name: Upload kernel artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: pixel-ksu-susfs-kernel-ab${{ steps.build_number.outputs.value }}
+          name: android-gki-ksu-susfs-kernel-ab${{ steps.build_number.outputs.value }}
           if-no-files-found: error
           path: |
-            ${{ env.KERNEL_SOURCE_DIR }}/out/dist/
+            ${{ env.KERNEL_SOURCE_DIR }}/out/
