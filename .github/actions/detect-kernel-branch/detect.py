@@ -9,12 +9,12 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 
-def fetch_url(url):
+def fetch_url(url: str) -> str:
     with urllib.request.urlopen(url) as resp:
         return resp.read().decode("utf-8")
 
 
-def extract_artifact_url(html):
+def extract_artifact_url(html: str) -> str:
     match = re.search(r"var JSVariables = (\{.*?\});", html, re.S)
     if not match:
         print("Unable to find JSVariables in Android CI artifact page", file=sys.stderr)
@@ -29,7 +29,7 @@ def extract_artifact_url(html):
     return artifact_url
 
 
-def detect_kernel_version(xml_path):
+def detect_kernel_version(xml_path: str) -> str:
     root = ET.parse(xml_path).getroot()
     if root.tag != "manifest":
         print(f"Expected manifest root tag, got {root.tag!r}", file=sys.stderr)
@@ -37,7 +37,15 @@ def detect_kernel_version(xml_path):
 
     for project in root.findall("project"):
         if project.get("path") == "common":
-            return project.get("revision")
+            upstream = project.get("upstream")
+            if not upstream:
+                break
+            # Extract kernel version (e.g., "android14-6.1" from "android14-6.1-2025-12")
+            version = re.sub(r'-\d{4}-\d{2}$', '', upstream)
+            if not version:
+                print(f"Regex match failed for upstream={upstream!r}", file=sys.stderr)
+                break
+            return version
 
     print('Could not find project with path="common" in manifest XML', file=sys.stderr)
     sys.exit(1)
