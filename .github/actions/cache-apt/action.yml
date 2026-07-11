@@ -14,7 +14,7 @@ runs:
         mkdir -p /var/cache/apt/archives/partial
 
     - name: Restore apt archive cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: /var/cache/apt/archives
         key: apt-${{ runner.os }}-${{ runner.arch }}-ubuntu-latest-v1-${{ hashFiles('.github/actions/install-build-dependencies/action.yml') }}
